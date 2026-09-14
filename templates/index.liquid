@@ -1,0 +1,386 @@
+{% comment %}
+  Homepage template
+{% endcomment %}
+
+<section class="hero-section">
+  <div class="hero-content">
+    <h1 class="hero-title">Premium Massage Devices</h1>
+    <p class="hero-subtitle">Experience ultimate relaxation and wellness</p>
+    <a href="/collections/all" class="btn btn-primary btn-large">Shop Now</a>
+  </div>
+</section>
+
+<section class="featured-section">
+  <div class="container">
+    <h2>Featured Products</h2>
+    
+    {% if collections.featured.products.size > 0 %}
+      <div class="products-grid">
+        {% for product in collections.featured.products limit: 8 %}
+          <div class="product-card">
+            <div class="product-card-image">
+              {% if product.featured_image %}
+                <img 
+                  src="{{ product.featured_image | img_url: '300x300' }}" 
+                  alt="{{ product.featured_image.alt | escape }}"
+                  loading="lazy"
+                  width="300"
+                  height="300"
+                >
+              {% endif %}
+              {% if product.compare_at_price %}
+                {% assign discount = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price %}
+                <span class="discount-badge">-{{ discount | round }}%</span>
+              {% endif %}
+            </div>
+            <div class="product-card-info">
+              <h3><a href="{{ product.url }}">{{ product.title }}</a></h3>
+              
+              <div class="product-rating">
+                <span class="star">★★★★★</span>
+                <span class="review-count">(42 reviews)</span>
+              </div>
+              
+              <div class="product-price">
+                {% if product.compare_at_price %}
+                  <span class="original-price">{{ product.compare_at_price | money }}</span>
+                {% endif %}
+                <span class="current-price">{{ product.price | money }}</span>
+              </div>
+              
+              <a href="{{ product.url }}" class="btn btn-primary btn-small">View Details</a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="benefits-section">
+  <div class="container">
+    <h2>Why Choose Us</h2>
+    <div class="benefits-grid">
+      <div class="benefit-card">
+        <div class="benefit-icon">🎯</div>
+        <h3>Proven Results</h3>
+        <p>Our massage devices are backed by thousands of satisfied customers worldwide</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">💎</div>
+        <h3>Premium Quality</h3>
+        <p>High-quality materials and advanced technology for optimal performance</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">🛡️</div>
+        <h3>Safe & Certified</h3>
+        <p>All products meet international safety and quality standards</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">🚚</div>
+        <h3>Fast Shipping</h3>
+        <p>Free shipping on orders over $50 with tracking information</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="testimonials-section">
+  <div class="container">
+    <h2>Customer Testimonials</h2>
+    <div class="testimonials-grid">
+      <div class="testimonial">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"This neck massager is amazing! I use it every day and my neck pain is completely gone."</p>
+        <p class="testimonial-author">- Sarah M.</p>
+      </div>
+      <div class="testimonial">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"The fascia gun helped me recover from my workout much faster. Highly recommend!"</p>
+        <p class="testimonial-author">- John D.</p>
+      </div>
+      <div class="testimonial">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"Best purchase I've made. The quality is excellent and customer service is top-notch."</p>
+        <p class="testimonial-author">- Emma L.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 6rem 1rem;
+    text-align: center;
+  }
+
+  .hero-content {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .hero-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+
+  .hero-subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .featured-section {
+    padding: 3rem 0;
+  }
+
+  .featured-section h2 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+
+  .product-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .product-card:hover {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    transform: translateY(-4px);
+  }
+
+  .product-card-image {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: #f5f5f5;
+  }
+
+  .product-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+  }
+
+  .product-card:hover .product-card-image img {
+    transform: scale(1.08);
+  }
+
+  .discount-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #ff4444;
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.875rem;
+  }
+
+  .product-card-info {
+    padding: 1rem;
+  }
+
+  .product-card-info h3 {
+    margin-bottom: 0.5rem;
+  }
+
+  .product-card-info a {
+    color: #121212;
+    text-decoration: none;
+  }
+
+  .product-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .star {
+    color: #ffc107;
+    font-size: 0.875rem;
+  }
+
+  .review-count {
+    font-size: 0.875rem;
+    color: #999;
+  }
+
+  .product-price {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .current-price {
+    font-weight: 700;
+    font-size: 1.25rem;
+  }
+
+  .original-price {
+    text-decoration: line-through;
+    color: #999;
+    font-size: 0.95rem;
+  }
+
+  .btn {
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .btn-primary {
+    background: #121212;
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: #333;
+    transform: translateY(-2px);
+  }
+
+  .btn-large {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+  }
+
+  .btn-small {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .benefits-section {
+    background: #f9f9f9;
+    padding: 3rem 0;
+  }
+
+  .benefits-section h2 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+
+  .benefit-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid #e0e0e0;
+  }
+
+  .benefit-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .benefit-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .benefit-card p {
+    color: #666;
+    line-height: 1.6;
+  }
+
+  .testimonials-section {
+    padding: 3rem 0;
+  }
+
+  .testimonials-section h2 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .testimonial {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+
+  .testimonial .stars {
+    color: #ffc107;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .testimonial-text {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    color: #555;
+    font-style: italic;
+  }
+
+  .testimonial-author {
+    font-weight: 600;
+    color: #121212;
+  }
+
+  @media (max-width: 768px) {
+    .hero-title {
+      font-size: 2rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1.125rem;
+    }
+
+    .products-grid {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+
+    .benefits-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

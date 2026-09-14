@@ -1,0 +1,502 @@
+{% comment %}
+  The contents of the Product template.
+  - https://shopify.dev/api/admin-rest/2023-10/resources/product
+{% endcomment %}
+
+<section class="product-section">
+  <div class="container">
+    <div class="product-wrapper">
+      <div class="product-gallery">
+        {% if product.featured_image %}
+          <div class="product-image-container">
+            <img
+              src="{{ product.featured_image | img_url: '600x600' }}"
+              alt="{{ product.featured_image.alt | escape }}"
+              class="product-image"
+              loading="lazy"
+              width="600"
+              height="600"
+            >
+          </div>
+        {% endif %}
+        
+        {% if product.images.size > 1 %}
+          <div class="product-thumbnails">
+            {% for image in product.images %}
+              <a href="{{ image | img_url: '600x600' }}" class="thumbnail" data-image-id="{{ image.id }}">
+                <img src="{{ image | img_url: '100x100' }}" alt="{{ image.alt | escape }}" width="100" height="100">
+              </a>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="product-info">
+        <div class="product-header">
+          {% if product.vendor %}
+            <p class="product-vendor">{{ product.vendor }}</p>
+          {% endif %}
+          <h1 class="product-title">{{ product.title }}</h1>
+        </div>
+
+        <div class="product-rating">
+          <div class="rating-stars">
+            {% for i in (1..5) %}
+              <span class="star {% if i <= 4 %}filled{% endif %}">★</span>
+            {% endfor %}
+            <span class="rating-text">(126 reviews)</span>
+          </div>
+        </div>
+
+        <div class="product-price">
+          {% if product.compare_at_price %}
+            <span class="original-price">{{ product.compare_at_price | money }}</span>
+          {% endif %}
+          <span class="current-price">{{ product.price | money }}</span>
+          {% if product.compare_at_price %}
+            <span class="discount">Save {{ product.compare_at_price | minus: product.price | money }}</span>
+          {% endif %}
+        </div>
+
+        {% if product.description %}
+          <div class="product-description">
+            {{ product.description | strip_html | truncatewords: 30 }}
+          </div>
+        {% endif %}
+
+        <form method="post" action="/cart/add" id="product-form" class="product-form">
+          {% if product.variants.size > 1 %}
+            <div class="form-group">
+              <label for="variant-select">Choose Options:</label>
+              <select id="variant-select" name="id" required>
+                {% for variant in product.variants %}
+                  <option value="{{ variant.id }}" {% if variant == product.selected_or_first_available_variant %}selected{% endif %}>
+                    {{ variant.title }} - {{ variant.price | money }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+          {% else %}
+            <input type="hidden" name="id" value="{{ product.variants.first.id }}">
+          {% endif %}
+
+          <div class="form-group">
+            <label for="quantity">Quantity:</label>
+            <div class="quantity-selector">
+              <button type="button" class="qty-btn minus" onclick="document.getElementById('quantity').value = Math.max(1, parseInt(document.getElementById('quantity').value) - 1)">−</button>
+              <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ product.variants.first.inventory_quantity | default: 10 }}" required>
+              <button type="button" class="qty-btn plus" onclick="document.getElementById('quantity').value = parseInt(document.getElementById('quantity').value) + 1">+</button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-large" id="add-to-cart-btn">
+            Add to Cart
+          </button>
+        </form>
+
+        <div class="trust-badges">
+          <div class="badge">
+            <span class="badge-icon">✓</span>
+            <span class="badge-text">30-Day Money Back Guarantee</span>
+          </div>
+          <div class="badge">
+            <span class="badge-icon">🚚</span>
+            <span class="badge-text">Free Shipping on Orders Over $50</span>
+          </div>
+          <div class="badge">
+            <span class="badge-icon">🔒</span>
+            <span class="badge-text">Secure Checkout</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if product.description %}
+  <section class="product-details-section">
+    <div class="container">
+      <h2>Product Details</h2>
+      <div class="product-full-description">
+        {{ product.description }}
+      </div>
+    </div>
+  </section>
+{% endif %}
+
+{% if collection.products.size > 1 %}
+  <section class="related-products-section">
+    <div class="container">
+      <h2>You May Also Like</h2>
+      <div class="products-grid">
+        {% for related_product in collection.products limit: 4 %}
+          {% if related_product.handle != product.handle %}
+            <div class="product-card">
+              <div class="product-card-image">
+                {% if related_product.featured_image %}
+                  <img src="{{ related_product.featured_image | img_url: '300x300' }}" alt="{{ related_product.title }}" loading="lazy">
+                {% endif %}
+              </div>
+              <div class="product-card-info">
+                <h3><a href="{{ related_product.url }}">{{ related_product.title }}</a></h3>
+                <p class="price">{{ related_product.price | money }}</p>
+                <a href="{{ related_product.url }}" class="btn btn-secondary">View Product</a>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+{% endif %}
+
+<style>
+  .product-section {
+    padding: 2rem 0;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .product-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    margin-bottom: 3rem;
+  }
+
+  .product-gallery {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .product-image-container {
+    background: #f5f5f5;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .product-image {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .product-thumbnails {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+  }
+
+  .thumbnail {
+    flex-shrink: 0;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: border-color 0.3s;
+  }
+
+  .thumbnail:hover {
+    border-color: #121212;
+  }
+
+  .thumbnail img {
+    display: block;
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+  }
+
+  .product-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .product-header {
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 1rem;
+  }
+
+  .product-vendor {
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+  }
+
+  .product-title {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .product-rating {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .rating-stars {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .star {
+    font-size: 1rem;
+    color: #ddd;
+  }
+
+  .star.filled {
+    color: #ffc107;
+  }
+
+  .rating-text {
+    font-size: 0.875rem;
+    color: #666;
+  }
+
+  .product-price {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .current-price {
+    font-size: 1.875rem;
+    font-weight: 700;
+  }
+
+  .original-price {
+    text-decoration: line-through;
+    color: #999;
+    font-size: 1.25rem;
+  }
+
+  .discount {
+    background: #ff4444;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .product-description {
+    color: #666;
+    line-height: 1.6;
+    font-size: 1rem;
+  }
+
+  .product-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .form-group label {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .form-group select,
+  .form-group input[type="number"] {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+
+  .quantity-selector {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .qty-btn {
+    background: #f5f5f5;
+    border: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-size: 1.25rem;
+    transition: background 0.3s;
+  }
+
+  .qty-btn:hover {
+    background: #e0e0e0;
+  }
+
+  .quantity-selector input[type="number"] {
+    border: none;
+    text-align: center;
+    flex: 1;
+    padding: 0.5rem;
+  }
+
+  .btn {
+    padding: 1rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .btn-primary {
+    background: #121212;
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: #333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  .btn-large {
+    padding: 1.25rem;
+    font-size: 1.125rem;
+  }
+
+  .trust-badges {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  .badge {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+  }
+
+  .badge-icon {
+    font-size: 1.5rem;
+  }
+
+  .product-details-section {
+    background: #f9f9f9;
+    padding: 3rem 0;
+    margin-top: 2rem;
+  }
+
+  .product-full-description {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #555;
+  }
+
+  .related-products-section {
+    padding: 3rem 0;
+  }
+
+  .related-products-section h2 {
+    font-size: 1.75rem;
+    margin-bottom: 2rem;
+  }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+
+  .product-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+
+  .product-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+
+  .product-card-image {
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: #f5f5f5;
+  }
+
+  .product-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+  }
+
+  .product-card:hover .product-card-image img {
+    transform: scale(1.05);
+  }
+
+  .product-card-info {
+    padding: 1rem;
+  }
+
+  .product-card-info h3 {
+    margin-bottom: 0.5rem;
+  }
+
+  .product-card-info a {
+    color: #121212;
+    text-decoration: none;
+  }
+
+  .product-card-info .price {
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .btn-secondary {
+    background: #f5f5f5;
+    color: #121212;
+    border: 1px solid #121212;
+    display: block;
+    text-align: center;
+  }
+
+  .btn-secondary:hover {
+    background: #121212;
+    color: white;
+  }
+
+  @media (max-width: 768px) {
+    .product-wrapper {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .product-title {
+      font-size: 1.5rem;
+    }
+
+    .current-price {
+      font-size: 1.5rem;
+    }
+
+    .products-grid {
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+  }
+</style>

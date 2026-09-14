@@ -1,0 +1,115 @@
+<header class="site-header">
+  <div class="container">
+    <div class="header-wrapper">
+      <div class="logo">
+        {% if settings.logo %}
+          <a href="/" class="logo-link">
+            <img src="{{ settings.logo | image_url: width: 200 }}" alt="{{ shop.name }}" width="150" height="50">
+          </a>
+        {% else %}
+          <a href="/" class="logo-link">{{ shop.name }}</a>
+        {% endif %}
+      </div>
+      
+      <nav class="main-nav">
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/collections/all">Shop</a></li>
+          <li><a href="/pages/about">About</a></li>
+          <li><a href="/pages/contact">Contact</a></li>
+        </ul>
+      </nav>
+      
+      <div class="header-actions">
+        <a href="/search" class="header-icon">🔍</a>
+        <a href="/account" class="header-icon">👤</a>
+        <a href="/cart" class="header-icon">🛒 <span class="cart-count">{{ cart.item_count }}</span></a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    background: white;
+    border-bottom: 1px solid #e0e0e0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .header-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+  }
+
+  .logo-link {
+    text-decoration: none;
+    color: #121212;
+    font-weight: 700;
+    font-size: 1.25rem;
+  }
+
+  .main-nav ul {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+  }
+
+  .main-nav a {
+    text-decoration: none;
+    color: #121212;
+    font-weight: 500;
+    transition: color 0.3s;
+  }
+
+  .main-nav a:hover {
+    color: #667eea;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  .header-icon {
+    text-decoration: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .cart-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #ff4444;
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 10px;
+    font-weight: 700;
+  }
+
+  @media (max-width: 768px) {
+    .main-nav ul {
+      gap: 1rem;
+      font-size: 0.95rem;
+    }
+
+    .header-wrapper {
+      gap: 1rem;
+    }
+  }
+</style>
