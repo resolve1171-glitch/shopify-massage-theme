@@ -1,0 +1,22 @@
+{
+  "sections": {
+    "banner": {
+      "type": "rich-text",
+      "settings": {
+        "heading": "Welcome to Our Massage Store",
+        "text": "Discover premium massage devices for your wellness journey",
+        "text_style": "heading-1"
+      }
+    },
+    "featured-products": {
+      "type": "featured-collection",
+      "settings": {
+        "title": "Featured Products",
+        "collection": "",
+        "products_to_show": 8,
+        "columns_desktop": 4
+      }
+    }
+  },
+  "order": ["banner", "featured-products"]
+}

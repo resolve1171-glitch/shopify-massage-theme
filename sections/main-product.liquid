@@ -1,0 +1,120 @@
+{% schema %}
+{
+  "name": "Main Product",
+  "blocks": [
+    {
+      "type": "title",
+      "name": "Product Title"
+    },
+    {
+      "type": "price",
+      "name": "Product Price"
+    },
+    {
+      "type": "variant_picker",
+      "name": "Variant Picker"
+    },
+    {
+      "type": "quantity_selector",
+      "name": "Quantity Selector"
+    },
+    {
+      "type": "buy_buttons",
+      "name": "Buy Buttons"
+    },
+    {
+      "type": "description",
+      "name": "Product Description"
+    }
+  ]
+}
+{% endschema %}
+
+<div class="product-main">
+  <div class="product-gallery">
+    {% if product.featured_image %}
+      <img src="{{ product.featured_image | img_url: '600x600' }}" alt="{{ product.title }}">
+    {% endif %}
+  </div>
+  <div class="product-info">
+    {% for block in section.blocks %}
+      {% case block.type %}
+        {% when 'title' %}
+          <h1>{{ product.title }}</h1>
+        {% when 'price' %}
+          <div class="price">
+            {% if product.compare_at_price %}
+              <span class="original-price">{{ product.compare_at_price | money }}</span>
+            {% endif %}
+            <span class="current-price">{{ product.price | money }}</span>
+          </div>
+        {% when 'variant_picker' %}
+          <form method="post" action="/cart/add">
+            {% if product.variants.size > 1 %}
+              <select name="id" required>
+                {% for variant in product.variants %}
+                  <option value="{{ variant.id }}">{{ variant.title }}</option>
+                {% endfor %}
+              </select>
+            {% endif %}
+        {% when 'quantity_selector' %}
+              <input type="number" name="quantity" value="1" min="1">
+        {% when 'buy_buttons' %}
+              <button type="submit" class="btn btn-primary">Add to Cart</button>
+            </form>
+        {% when 'description' %}
+          <div class="product-description">
+            {{ product.description }}
+          </div>
+      {% endcase %}
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+  .product-main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  .product-gallery img {
+    width: 100%;
+    height: auto;
+  }
+  .price {
+    font-size: 1.5rem;
+    margin: 1rem 0;
+  }
+  .original-price {
+    text-decoration: line-through;
+    margin-right: 1rem;
+    color: #999;
+  }
+  .current-price {
+    font-weight: bold;
+  }
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    width: 100%;
+    margin-top: 1rem;
+  }
+  .btn-primary {
+    background-color: #121212;
+    color: white;
+  }
+  .btn-primary:hover {
+    background-color: #333;
+  }
+  @media (max-width: 768px) {
+    .product-main {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
